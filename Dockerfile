@@ -43,7 +43,7 @@ RUN mkdir arrp/build && cd arrp/build && \
 
 # Build server
 
-COPY . server
+COPY . server/
 RUN mkdir server/build && cd server/build && \
     cmake -D CMAKE_INSTALL_PREFIX=/opt/service .. && \
     cmake --build . && make install .
@@ -53,10 +53,10 @@ RUN mkdir server/build && cd server/build && \
 
 FROM alpine@${ALPINE_DIGEST} as service
 
-RUN apk add binutils g++
+RUN apk add g++
 
 # Copy Poco
-COPY --from=builder /usr/local/lib/libPoco* /usr/local/lib/
+COPY --from=builder /usr/local/lib/libPoco*.so.* /usr/local/lib/
  # Copy server
 COPY --from=builder /opt/service /opt/service
 
