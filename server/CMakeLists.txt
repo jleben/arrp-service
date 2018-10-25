@@ -9,4 +9,4 @@ target_link_libraries (arrp-web-server
     PocoNet
 )
 
-install(TARGETS arrp-web-server DESTINATION .)
+install(TARGETS arrp-web-server DESTINATION server)
