@@ -29,6 +29,7 @@ Poco::Net::HTTPServerParams * Server::params()
 {
     auto params = new HTTPServerParams;
     params->setMaxThreads(1);
+    return params;
 }
 
 Request_Handler_Factory::Request_Handler_Factory()
