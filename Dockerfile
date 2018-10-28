@@ -61,4 +61,4 @@ COPY --from=builder /usr/local/lib/libPoco*.so.* /usr/local/lib/
 COPY --from=builder /opt/service /opt/service
 
 WORKDIR /opt/service/request
-CMD /opt/service/server/arrp-web-server -d /opt/service/arrp
+CMD ["/opt/service/server/arrp-web-server","-d","/opt/service/arrp"]

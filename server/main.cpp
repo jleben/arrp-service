@@ -30,12 +30,15 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    {
-        Server server;
+    Server server;
 
-        for(;;)
-            this_thread::sleep_for(chrono::seconds(1));
+    for(;;)
+    {
+        //cout << "Ping." << endl;
+        this_thread::sleep_for(chrono::seconds(1));
     }
+
+    //cout << "End." << endl;
 
     return 0;
 }

@@ -8,6 +8,9 @@
 #include <stdexcept>
 #include <atomic>
 #include <mutex>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace Arrp_Web {
 
@@ -20,6 +23,8 @@ using Poco::Net::HTTPRequestHandlerFactory;
 using std::string;
 using std::atomic;
 using std::mutex;
+using std::istream;
+using std::ostream;
 
 class Options
 {
@@ -66,11 +71,34 @@ public:
         const char * what() const noexcept override { return msg.c_str(); }
     };
 
+    struct Request_Error : public Error
+    {
+        using Error::Error;
+    };
+
+    struct Program_Error : public Error
+    {
+        using Error::Error;
+    };
+
     Play_Handler(int id);
 
 private:
+    struct Request
+    {
+        int program_out_count = 10;
+    };
+
     int d_id = 0;
-    string d_log_dir;
+
+    fs::path log_path;
+    const fs::path output_path = "output";
+    const fs::path arrp_source_path = output_path / "program.arrp";
+    const fs::path arrp_compile_log_path = output_path / "arrp_compile_log.txt";
+    const fs::path cpp_source_path = output_path / "arrp_program.cpp";
+    const fs::path cpp_compile_log_path = output_path / "cpp_compile_log.txt";
+    const fs::path program_path = output_path / "program";
+    const fs::path program_out_path = output_path / "program_out.txt";
 
     void handleRequest
     (HTTPServerRequest & request,
@@ -80,10 +108,18 @@ private:
     void play(HTTPServerRequest & request,
               HTTPServerResponse & response,
               const Poco::URI &);
+
+    static Request parse_query(const Poco::URI &);
+    void prepare_filesystem();
+    static void ensure_empty_dir(const fs::path &);
     void write_arrp_code(HTTPServerRequest & request);
-    void compile_arrp_code(HTTPServerResponse & response);
-    void compile_cpp_code(HTTPServerResponse & response);
-    void run_program(HTTPServerResponse & response, int out_count);
+    void compile_arrp_code();
+    void compile_cpp_code();
+    void run_program(int out_count);
+    void send_report(HTTPServerResponse & response);
+    static string encode_file_in_base64(const fs::path &);
+    static void print_file(const fs::path &);
+    static void copy_stream(istream &, ostream &, std::size_t max_size);
 };
 
 }
