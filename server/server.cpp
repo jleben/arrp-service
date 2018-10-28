@@ -82,7 +82,7 @@ void Play_Handler::handleRequest(HTTPServerRequest &request, HTTPServerResponse 
     catch (Program_Error & e)
     {
         cerr << "Program error: " << e.what() << endl;
-        send_report(response);
+        send_report(response, e.what());
     }
     catch (Error & e)
     {
@@ -285,7 +285,7 @@ void Play_Handler::run_program(int out_count)
     throw Program_Error("Program execution failed.");
 }
 
-void Play_Handler::send_report(HTTPServerResponse & response)
+void Play_Handler::send_report(HTTPServerResponse & response, const string & error)
 {
     using namespace Poco::Net;
     using nlohmann::json;
@@ -305,6 +305,7 @@ void Play_Handler::send_report(HTTPServerResponse & response)
 
     json j;
 
+    j["error"] = error;
     j["arrp"] = encode_file_in_base64(arrp_source_path);
     j["arrp_compiler"] = encode_file_in_base64(arrp_compile_log_path);
     j["cpp"] = encode_file_in_base64(cpp_source_path);
@@ -327,6 +328,7 @@ string Play_Handler::encode_file_in_base64(const fs::path & p)
             return string();
 
         Poco::Base64Encoder encoder(data);
+        encoder.rdbuf()->setLineLength(0);
         copy_stream(file, encoder, 1024 * 1024);
     }
 

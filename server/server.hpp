@@ -116,7 +116,7 @@ private:
     void compile_arrp_code();
     void compile_cpp_code();
     void run_program(int out_count);
-    void send_report(HTTPServerResponse & response);
+    void send_report(HTTPServerResponse & response, const string & error = string());
     static string encode_file_in_base64(const fs::path &);
     static void print_file(const fs::path &);
     static void copy_stream(istream &, ostream &, std::size_t max_size);
